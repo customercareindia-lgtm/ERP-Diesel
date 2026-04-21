@@ -1,0 +1,302 @@
+{
+  "entities": {
+    "tenant": {
+      "title": "Tenant",
+      "description": "A SaaS tenant representing a company using the ERP.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Company name" },
+        "gstin": { "type": "string", "description": "Indian GST Identification Number" },
+        "pan": { "type": "string", "description": "Permanent Account Number" },
+        "address": { "type": "string" },
+        "settings": { "type": "object", "description": "Tenant specific configurations" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "gstin"]
+    },
+    "user": {
+      "title": "User",
+      "description": "An ERP user with specific access roles.",
+      "type": "object",
+      "properties": {
+        "tenantId": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "name": { "type": "string" },
+        "role": { "type": "string", "enum": ["super_admin", "admin", "accountant", "warehouse_manager", "salesman", "customer"] },
+        "phone": { "type": "string" },
+        "active": { "type": "boolean" },
+        "lastLogin": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "role", "tenantId"]
+    },
+    "product": {
+      "title": "Product",
+      "description": "A lubricant product SKU.",
+      "type": "object",
+      "properties": {
+        "tenantId": { "type": "string" },
+        "sku": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string", "enum": ["Engine Oil", "Gear Oil", "Grease", "Coolant", "Hydraulic Oil", "Brake Fluid", "Industrial"] },
+        "hsnCode": { "type": "string" },
+        "viscosity": { "type": "string" },
+        "packSize": { "type": "string", "enum": ["1L", "5L", "20L", "210L"] },
+        "purchasePrice": { "type": "number" },
+        "sellingPrice": { "type": "number" },
+        "minStockLevel": { "type": "number" },
+        "supplierName": { "type": "string" },
+        "image": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["sku", "name", "hsnCode", "tenantId", "category", "purchasePrice", "sellingPrice"]
+    },
+    "inventory": {
+      "title": "Inventory",
+      "description": "Aggregated stock levels tracking across locations.",
+      "type": "object",
+      "properties": {
+        "tenantId": { "type": "string" },
+        "productId": { "type": "string" },
+        "totalStock": { "type": "number" },
+        "reservedStock": { "type": "number", "description": "Stock committed to confirmed orders" },
+        "lastUpdated": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["In Stock", "Low Stock", "Out of Stock"] }
+      },
+      "required": ["productId", "totalStock", "tenantId"]
+    },
+    "customer": {
+      "title": "Customer",
+      "description": "A B2B dealer or distributor.",
+      "type": "object",
+      "properties": {
+        "tenantId": { "type": "string" },
+        "name": { "type": "string" },
+        "gstin": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "creditLimit": { "type": "number" },
+        "outstandingBalance": { "type": "number" },
+        "creditScore": { "type": "integer" },
+        "salesmanId": { "type": "string" }
+      },
+      "required": ["name", "tenantId"]
+    },
+    "salesOrder": {
+      "title": "Sales Order",
+      "description": "A customer order placed via salesman or portal.",
+      "type": "object",
+      "properties": {
+        "tenantId": { "type": "string" },
+        "orderNumber": { "type": "string" },
+        "customerId": { "type": "string" },
+        "items": { "type": "array" },
+        "subtotal": { "type": "number" },
+        "taxAmount": { "type": "number" },
+        "discountAmount": { "type": "number" },
+        "totalAmount": { "type": "number" },
+        "status": { "type": "string", "enum": ["draft", "confirmed", "shipped", "delivered", "completed", "cancelled"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["orderNumber", "customerId", "tenantId"]
+    },
+    "invoice": {
+      "title": "Invoice",
+      "description": "Financial billing document linked to a sales order.",
+      "type": "object",
+      "properties": {
+        "tenantId": { "type": "string" },
+        "invoiceNumber": { "type": "string" },
+        "orderId": { "type": "string" },
+        "customerId": { "type": "string" },
+        "totalAmount": { "type": "number" },
+        "paidAmount": { "type": "number" },
+        "status": { "type": "string", "enum": ["unpaid", "partial", "paid", "overdue"] },
+        "dueDate": { "type": "string", "format": "date-time" }
+      }
+    },
+    "payment": {
+      "title": "Payment",
+      "description": "Financial transaction record for invoice settlement.",
+      "type": "object",
+      "properties": {
+        "tenantId": { "type": "string" },
+        "invoiceId": { "type": "string" },
+        "amount": { "type": "number" },
+        "paymentMode": { "type": "string", "enum": ["Cash", "Bank", "UPI"] },
+        "date": { "type": "string", "format": "date-time" }
+      }
+    },
+    "audit_log": {
+      "title": "Audit Log",
+      "description": "Immutable log of system changes.",
+      "type": "object",
+      "properties": {
+        "tenantId": { "type": "string" },
+        "userId": { "type": "string" },
+        "action": { "type": "string" },
+        "resource": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "ipAddress": { "type": "string" },
+        "payload": { "type": "object" }
+      },
+      "required": ["action", "resource", "timestamp"]
+    },
+    "account": {
+      "title": "Account",
+      "description": "A ledger account in the chart of accounts.",
+      "type": "object",
+      "properties": {
+        "tenantId": { "type": "string" },
+        "code": { "type": "string" },
+        "name": { "type": "string" },
+        "type": { "type": "string", "enum": ["Asset", "Liability", "Equity", "Revenue", "Expense"] },
+        "balance": { "type": "number" }
+      },
+      "required": ["code", "name", "type", "tenantId"]
+    },
+    "journal_entry": {
+      "title": "Journal Entry",
+      "description": "A balanced accounting transaction.",
+      "type": "object",
+      "properties": {
+        "tenantId": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" },
+        "voucherNumber": { "type": "string" },
+        "description": { "type": "string" },
+        "lines": { "type": "array" },
+        "totalAmount": { "type": "number" },
+        "type": { "type": "string", "enum": ["Sales", "Purchase", "Receipt", "Payment", "Journal"] }
+      },
+      "required": ["voucherNumber", "date", "tenantId"]
+    },
+    "vendor": {
+      "title": "Vendor",
+      "description": "A supplier of raw materials.",
+      "type": "object",
+      "properties": {
+        "tenantId": { "type": "string" },
+        "name": { "type": "string" },
+        "gstin": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "address": { "type": "string" }
+      },
+      "required": ["name", "tenantId"]
+    },
+    "transporter": {
+      "title": "Transporter",
+      "description": "Logistics partner for shipping.",
+      "type": "object",
+      "properties": {
+        "tenantId": { "type": "string" },
+        "name": { "type": "string" },
+        "gstin": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" }
+      },
+      "required": ["name", "tenantId"]
+    },
+    "vehicle": {
+      "title": "Vehicle",
+      "description": "Transport vehicle for deliveries.",
+      "type": "object",
+      "properties": {
+        "tenantId": { "type": "string" },
+        "vehicleNumber": { "type": "string" },
+        "type": { "type": "string", "enum": ["Tanker", "Truck", "Mini Truck", "Van"] },
+        "driverName": { "type": "string" },
+        "status": { "type": "string", "enum": ["Available", "On Trip", "Maintenance"] }
+      },
+      "required": ["vehicleNumber", "tenantId"]
+    },
+    "warehouse": {
+      "title": "Warehouse",
+      "description": "Storage location for stock.",
+      "type": "object",
+      "properties": {
+        "tenantId": { "type": "string" },
+        "name": { "type": "string" },
+        "location": { "type": "string" }
+      },
+      "required": ["name", "tenantId"]
+    },
+    "dispatchOrder": {
+      "title": "Dispatch Order",
+      "description": "Logistics order for shipping goods.",
+      "type": "object",
+      "properties": {
+        "tenantId": { "type": "string" },
+        "dispatchId": { "type": "string" },
+        "orderId": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["dispatchId", "orderId", "tenantId"]
+    },
+    "salesman": {
+      "title": "Salesman",
+      "description": "Field force profile and location telemetry.",
+      "type": "object",
+      "properties": {
+        "tenantId": { "type": "string" },
+        "employeeId": { "type": "string" },
+        "name": { "type": "string" },
+        "territory": { "type": "string" },
+        "currentLocation": { "type": "object" },
+        "active": { "type": "boolean" }
+      },
+      "required": ["name", "tenantId", "employeeId"]
+    },
+    "visit": {
+      "title": "Visit",
+      "description": "Field visit record by salesman.",
+      "type": "object",
+      "properties": {
+        "tenantId": { "type": "string" },
+        "salesmanId": { "type": "string" },
+        "customerId": { "type": "string" },
+        "status": { "type": "string", "enum": ["Visited", "Not Available", "Order Taken", "Follow Up"] },
+        "checkIn": { "type": "string", "format": "date-time" }
+      },
+      "required": ["salesmanId", "customerId", "tenantId"]
+    },
+    "attendance": {
+      "title": "Attendance",
+      "description": "Daily check-in/out for field staff.",
+      "type": "object",
+      "properties": {
+        "tenantId": { "type": "string" },
+        "salesmanId": { "type": "string" },
+        "date": { "type": "string" },
+        "checkIn": { "type": "string", "format": "date-time" }
+      },
+      "required": ["salesmanId", "date", "tenantId"]
+    }
+  },
+  "firestore": {
+    "tenants/{tenantId}": { "schema": "tenant", "description": "Root tenant configuration" },
+    "users/{userId}": { "schema": "user", "description": "Global user profiles" },
+    "products/{productId}": { "schema": "product", "description": "Global product master with tenantId isolation" },
+    "batches/{batchId}": { "schema": "batch", "description": "Global batches for manufacturing" },
+    "inventory/{inventoryId}": { "schema": "inventory", "description": "Global stock levels with tenantId isolation" },
+    "customers/{customerId}": { "schema": "customer", "description": "Customer accounts" },
+    "sales_orders/{orderId}": { "schema": "salesOrder", "description": "Global sales orders" },
+    "invoices/{invoiceId}": { "schema": "invoice", "description": "Global billing records" },
+    "payments/{paymentId}": { "schema": "payment", "description": "Global payment transactions" },
+    "vendors/{vendorId}": { "schema": "vendor", "description": "Supplier accounts" },
+    "transporters/{transporterId}": { "schema": "transporter", "description": "Logistics partners" },
+    "vehicles/{vehicleId}": { "schema": "vehicle", "description": "Transport fleet" },
+    "warehouses/{warehouseId}": { "schema": "warehouse", "description": "Storage locations" },
+    "dispatch_orders/{dispatchId}": { "schema": "dispatchOrder", "description": "Logistics dispatch orders" },
+    "salesmen/{salesmanId}": { "schema": "salesman", "description": "Field sales profiles" },
+    "visits/{visitId}": { "schema": "visit", "description": "Field visit logs" },
+    "attendance/{attendanceId}": { "schema": "attendance", "description": "Staff attendance" },
+    "sales_targets/{targetId}": { "schema": "salesTarget", "description": "Monthly sales goals" },
+    "sales_expenses/{expenseId}": { "schema": "salesExpense", "description": "Field expense claims" },
+    "accounts/{accountId}": { "schema": "account", "description": "Ledger accounts" },
+    "journal_entries/{entryId}": { "schema": "journal_entry", "description": "Accounting transactions" },
+    "raw_materials/{rmId}": { "schema": "raw_material", "description": "Raw material inventory" },
+    "boms/{bomId}": { "schema": "bom", "description": "Product formulations" },
+    "production_orders/{poId}": { "schema": "productionOrder", "description": "Manufacturing orders" },
+    "activity_logs/{logId}": { "schema": "audit_log", "description": "Global system-wide activity trail" }
+  }
+}

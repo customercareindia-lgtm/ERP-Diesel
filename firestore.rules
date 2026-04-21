@@ -1,0 +1,130 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net - Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return true; // DEMO MODE: Public access enabled
+    }
+
+    function isSuperAdmin() {
+      return true; // DEMO MODE: Public access enabled
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && (request.auth != null ? request.auth.uid == userId : true);
+    }
+
+    // Root-level Collections (Matching inventoryService.ts)
+    match /products/{productId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /inventory/{invId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /batches/{batchId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /sales_orders/{orderId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /activity_logs/{logId} {
+      allow read, create: if isAuthenticated();
+      allow update, delete: if false;
+    }
+
+    match /tenants/{tenantId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /users/{userId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /customers/{customerId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /raw_materials/{rmId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /boms/{bomId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /production_orders/{poId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /invoices/{invoiceId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /payments/{paymentId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /accounts/{accountId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /journal_entries/{entryId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /vendors/{vendorId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /transporters/{transporterId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /vehicles/{vehicleId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /warehouses/{warehouseId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /dispatch_orders/{dispatchId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /salesmen/{salesmanId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /visits/{visitId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /attendance/{attendanceId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /sales_targets/{targetId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /sales_expenses/{expenseId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /purchase_orders/{poId} {
+      allow read, write: if isAuthenticated();
+    }
+  }
+}

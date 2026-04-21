@@ -1,0 +1,6 @@
+{
+  "name": "LubriERP Pro",
+  "description": "Production-grade ERP for lubricant manufacturing and wholesale distribution, featuring multi-tenant architecture, GST compliance, logistics tracking, and AI-powered demand forecasting.",
+  "requestFramePermissions": ["camera", "geolocation"],
+  "majorCapabilities": ["Inventory Management", "Manufacturing (BOM & Batch Tracking)", "Indian GST Compliance", "Salesman CRM", "Logistics & Transport"]
+}
